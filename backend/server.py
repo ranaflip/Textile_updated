@@ -65,14 +65,16 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
-# Custom JSON encoder for datetime objects
+# Custom JSON encoder for datetime objects and ObjectId
 class DateTimeEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime):
             return obj.isoformat()
+        elif hasattr(obj, '__str__'):  # Handle ObjectId and other MongoDB objects
+            return str(obj)
         return super().default(obj)
 
-# Helper function to convert datetime objects to ISO strings
+# Helper function to convert datetime objects and ObjectIds to serializable format
 def serialize_datetime(obj):
     if isinstance(obj, dict):
         return {k: serialize_datetime(v) for k, v in obj.items()}
@@ -80,6 +82,8 @@ def serialize_datetime(obj):
         return [serialize_datetime(item) for item in obj]
     elif isinstance(obj, datetime):
         return obj.isoformat()
+    elif hasattr(obj, '__str__') and obj.__class__.__name__ == 'ObjectId':
+        return str(obj)
     return obj
 
 # Define Models
