@@ -92,26 +92,33 @@ class ScrapedData(BaseModel):
 
 class WebScraperEngine:
     def __init__(self):
-        self.setup_driver()
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        })
+        self.use_selenium = False  # Start with requests, fallback to selenium if needed
+        self.chrome_options = None
+        self.driver_path = None
+        self.setup_selenium_fallback()
     
-    def setup_driver(self):
-        """Setup Chrome driver with options for scraping JS-heavy sites"""
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--disable-gpu")
-        chrome_options.add_argument("--window-size=1920,1080")
-        chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-        
+    def setup_selenium_fallback(self):
+        """Setup Selenium as fallback for JS-heavy sites"""
         try:
-            # Try to use ChromeDriverManager for automatic driver management
-            self.driver_path = ChromeDriverManager().install()
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+            chrome_options.add_argument("--no-sandbox")
+            chrome_options.add_argument("--disable-dev-shm-usage")
+            chrome_options.add_argument("--disable-gpu")
+            chrome_options.add_argument("--window-size=1920,1080")
+            chrome_options.add_argument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+            
             self.chrome_options = chrome_options
+            # We'll enable selenium when Chrome is available
+            self.use_selenium = False
+            logging.info("Selenium configured as fallback (Chrome not available)")
         except Exception as e:
-            logging.error(f"Failed to setup Chrome driver: {e}")
-            self.driver_path = None
-            self.chrome_options = chrome_options
+            logging.error(f"Failed to setup Selenium fallback: {e}")
+            self.use_selenium = False
 
     def check_robots_txt(self, url: str, user_agent: str = "*") -> bool:
         """Check if scraping is allowed according to robots.txt"""
