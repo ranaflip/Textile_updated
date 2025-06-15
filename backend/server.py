@@ -65,6 +65,23 @@ class ConnectionManager:
 
 manager = ConnectionManager()
 
+# Custom JSON encoder for datetime objects
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+# Helper function to convert datetime objects to ISO strings
+def serialize_datetime(obj):
+    if isinstance(obj, dict):
+        return {k: serialize_datetime(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [serialize_datetime(item) for item in obj]
+    elif isinstance(obj, datetime):
+        return obj.isoformat()
+    return obj
+
 # Define Models
 class ScrapingJob(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
