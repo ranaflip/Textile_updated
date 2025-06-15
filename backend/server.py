@@ -511,7 +511,7 @@ async def process_scraping_job(job_id: str):
             "type": "job_failed",
             "job_id": job_id,
             "error": str(e)
-        }))
+        }, cls=DateTimeEncoder))
 
 # Include the router in the main app
 app.include_router(api_router)
