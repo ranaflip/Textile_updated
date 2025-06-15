@@ -1,17 +1,18 @@
+from datetime import datetime, timezone
 from fastapi import FastAPI, APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel, Field
+from typing import List, Optional, Dict, Any
+import json
+import uuid
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
 import asyncio
-import json
 from pathlib import Path
-from pydantic import BaseModel, Field, HttpUrl
-from typing import List, Optional, Dict, Any
-import uuid
-from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
