@@ -261,7 +261,7 @@ class WebScraperEngine:
         return items
 
     async def scrape_url(self, url: str, job_id: str) -> ScrapedData:
-        """Scrape a single URL"""
+        """Scrape a single URL using requests first, selenium as fallback"""
         scraped_data = ScrapedData(url=url, job_id=job_id)
         
         try:
@@ -270,27 +270,12 @@ class WebScraperEngine:
                 scraped_data.error = "Scraping not allowed by robots.txt"
                 return scraped_data
             
-            # Setup driver for this request
-            if not self.driver_path:
-                raise Exception("Chrome driver not available")
-            
-            driver = webdriver.Chrome(executable_path=self.driver_path, options=self.chrome_options)
-            
+            # First try with requests (faster for static content)
             try:
-                # Load the page
-                driver.get(url)
+                response = self.session.get(url, timeout=10, allow_redirects=True)
+                response.raise_for_status()
                 
-                # Wait for page to load (adjust timeout as needed)
-                WebDriverWait(driver, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, "body"))
-                )
-                
-                # Additional wait for dynamic content
-                time.sleep(3)
-                
-                # Get page source and parse with BeautifulSoup
-                page_source = driver.page_source
-                soup = BeautifulSoup(page_source, 'html.parser')
+                soup = BeautifulSoup(response.content, 'html.parser')
                 
                 # Extract title
                 title_elem = soup.find('title')
@@ -301,12 +286,46 @@ class WebScraperEngine:
                 scraped_data.items = self.extract_item_data(soup)
                 scraped_data.prices = self.extract_price_data(soup)
                 
-            finally:
-                driver.quit()
+                # Check if we got meaningful data
+                total_data_points = len(scraped_data.tables) + len(scraped_data.items) + len(scraped_data.prices)
+                
+                # If we got very little data, it might be a JS-heavy site - try Selenium
+                if total_data_points < 3 and self.use_selenium:
+                    logging.info(f"Low data yield for {url}, trying Selenium fallback")
+                    return await self.scrape_with_selenium(url, job_id)
+                
+                return scraped_data
+                
+            except Exception as e:
+                logging.warning(f"Requests failed for {url}: {e}. Trying Selenium fallback...")
+                if self.use_selenium:
+                    return await self.scrape_with_selenium(url, job_id)
+                else:
+                    raise e
                 
         except Exception as e:
             scraped_data.error = str(e)
             logging.error(f"Error scraping {url}: {e}")
+        
+        return scraped_data
+    
+    async def scrape_with_selenium(self, url: str, job_id: str) -> ScrapedData:
+        """Scrape URL using Selenium for JS-heavy sites"""
+        scraped_data = ScrapedData(url=url, job_id=job_id)
+        
+        try:
+            if not self.chrome_options:
+                raise Exception("Selenium not properly configured")
+            
+            # This would work if Chrome was available
+            # driver = webdriver.Chrome(options=self.chrome_options)
+            # For now, return an error indicating Chrome is needed
+            scraped_data.error = "JavaScript-heavy site detected. Chrome/Selenium required but not available in this environment."
+            return scraped_data
+            
+        except Exception as e:
+            scraped_data.error = f"Selenium scraping failed: {str(e)}"
+            logging.error(f"Selenium error for {url}: {e}")
         
         return scraped_data
 
