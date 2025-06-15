@@ -440,6 +440,9 @@ async def process_scraping_job(job_id: str):
                 
                 # Store result in database
                 result_dict = jsonable_encoder(scraped_data)
+                # Remove MongoDB ObjectId if present
+                if '_id' in result_dict:
+                    del result_dict['_id']
                 await db.scraped_data.insert_one(result_dict)
                 results.append(result_dict)
                 
