@@ -355,7 +355,7 @@ scraper = WebScraperEngine()
 async def root():
     return {"message": "Web Scraper Tool API", "version": "1.0.0"}
 
-@api_router.post("/scrape", response_model=ScrapingJob)
+@api_router.post("/scrape")
 async def create_scraping_job(job_data: ScrapingJobCreate):
     """Create a new scraping job"""
     job = ScrapingJob(
@@ -364,32 +364,35 @@ async def create_scraping_job(job_data: ScrapingJobCreate):
     )
     
     # Store job in database
-    await db.scraping_jobs.insert_one(job.dict())
+    job_dict = jsonable_encoder(job)
+    await db.scraping_jobs.insert_one(job_dict)
     
     # Start background processing
     asyncio.create_task(process_scraping_job(job.id))
     
-    return job
+    return JSONResponse(content=serialize_datetime(job_dict))
 
-@api_router.get("/jobs", response_model=List[ScrapingJob])
+@api_router.get("/jobs")
 async def get_scraping_jobs():
     """Get all scraping jobs"""
     jobs = await db.scraping_jobs.find().sort("created_at", -1).to_list(100)
-    return [ScrapingJob(**job) for job in jobs]
+    serialized_jobs = [serialize_datetime(job) for job in jobs]
+    return JSONResponse(content=serialized_jobs)
 
-@api_router.get("/jobs/{job_id}", response_model=ScrapingJob)
+@api_router.get("/jobs/{job_id}")
 async def get_scraping_job(job_id: str):
     """Get a specific scraping job"""
     job = await db.scraping_jobs.find_one({"id": job_id})
     if not job:
         raise HTTPException(status_code=404, detail="Job not found")
-    return ScrapingJob(**job)
+    return JSONResponse(content=serialize_datetime(job))
 
 @api_router.get("/jobs/{job_id}/results")
 async def get_job_results(job_id: str):
     """Get results for a specific job"""
     results = await db.scraped_data.find({"job_id": job_id}).to_list(1000)
-    return [ScrapedData(**result) for result in results]
+    serialized_results = [serialize_datetime(result) for result in results]
+    return JSONResponse(content=serialized_results)
 
 @api_router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
