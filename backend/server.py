@@ -424,7 +424,7 @@ async def process_scraping_job(job_id: str):
             "type": "job_started",
             "job_id": job_id,
             "total_urls": job.total_urls
-        }))
+        }, cls=DateTimeEncoder))
         
         results = []
         processed_count = 0
@@ -435,8 +435,9 @@ async def process_scraping_job(job_id: str):
                 scraped_data = await scraper.scrape_url(url, job_id)
                 
                 # Store result in database
-                await db.scraped_data.insert_one(scraped_data.dict())
-                results.append(scraped_data.dict())
+                result_dict = jsonable_encoder(scraped_data)
+                await db.scraped_data.insert_one(result_dict)
+                results.append(result_dict)
                 
                 processed_count += 1
                 
@@ -453,8 +454,8 @@ async def process_scraping_job(job_id: str):
                     "processed": processed_count,
                     "total": job.total_urls,
                     "current_url": url,
-                    "result": scraped_data.dict()
-                }))
+                    "result": serialize_datetime(result_dict)
+                }, cls=DateTimeEncoder))
                 
                 # Rate limiting - wait between requests
                 await asyncio.sleep(2)
@@ -465,7 +466,8 @@ async def process_scraping_job(job_id: str):
                 
                 # Store error result
                 error_data = ScrapedData(url=url, job_id=job_id, error=str(e))
-                await db.scraped_data.insert_one(error_data.dict())
+                error_dict = jsonable_encoder(error_data)
+                await db.scraped_data.insert_one(error_dict)
                 
                 continue
         
@@ -487,7 +489,7 @@ async def process_scraping_job(job_id: str):
             "type": "job_completed",
             "job_id": job_id,
             "total_results": len(results)
-        }))
+        }, cls=DateTimeEncoder))
         
     except Exception as e:
         logging.error(f"Error processing job {job_id}: {e}")
