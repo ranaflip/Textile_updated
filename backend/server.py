@@ -474,6 +474,9 @@ async def process_scraping_job(job_id: str):
                 # Store error result
                 error_data = ScrapedData(url=url, job_id=job_id, error=str(e))
                 error_dict = jsonable_encoder(error_data)
+                # Remove MongoDB ObjectId if present
+                if '_id' in error_dict:
+                    del error_dict['_id']
                 await db.scraped_data.insert_one(error_dict)
                 
                 continue
