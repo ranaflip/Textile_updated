@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind base, components, and utilities should be processed by Tailwind CLI or PostCSS. 
+   If you see an error here, ensure your build tool is set up for Tailwind CSS. 
+   Otherwise, remove these lines if not using Tailwind. */
 
 /* Custom scrollbar styles */
 .overflow-y-auto::-webkit-scrollbar {
@@ -43,28 +43,35 @@
 
 /* Status indicators */
 .status-pending {
-  @apply bg-yellow-100 text-yellow-800;
+  background-color: #fef9c3; /* Tailwind bg-yellow-100 */
+  color: #854d0e;            /* Tailwind text-yellow-800 */
 }
 
 .status-in-progress {
-  @apply bg-blue-100 text-blue-800;
+  background-color: #dbeafe; /* Tailwind bg-blue-100 */
+  color: #1e40af;            /* Tailwind text-blue-800 */
 }
 
 .status-completed {
-  @apply bg-green-100 text-green-800;
+  background-color: #dcfce7; /* Tailwind bg-green-100 */
+  color: #166534;            /* Tailwind text-green-800 */
 }
 
 .status-failed {
-  @apply bg-red-100 text-red-800;
+  background-color: #fee2e2; /* Tailwind bg-red-100 */
+  color: #991b1b;            /* Tailwind text-red-800 */
 }
 
 /* Table styling improvements */
 table {
-  @apply border-collapse;
+  border-collapse: collapse;
 }
 
 th {
-  @apply sticky top-0;
+  position: sticky;
+  top: 0;
+  background: inherit;
+  z-index: 1;
 }
 
 /* Progress bar animation */
@@ -74,11 +81,11 @@ th {
 
 /* WebSocket connection indicator */
 .ws-connected {
-  @apply text-green-500;
+  color: #22c55e; /* Tailwind text-green-500 */
 }
 
 .ws-disconnected {
-  @apply text-red-500;
+  color: #ef4444; /* Tailwind text-red-500 */
 }
 
 /* Real-time updates styling */
@@ -99,50 +106,110 @@ th {
 
 /* Custom focus styles */
 .focus-ring:focus {
-  @apply outline-none ring-2 ring-blue-500 ring-offset-2;
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff; /* Approximate Tailwind ring-2 ring-blue-500 ring-offset-2 */
 }
 
 /* Price highlighting */
 .price-highlight {
-  @apply bg-green-50 border-green-200 text-green-700 font-semibold;
+  background-color: #f0fdf4; /* Tailwind bg-green-50 */
+  border: 1px solid #bbf7d0; /* Tailwind border-green-200 */
+  color: #15803d;            /* Tailwind text-green-700 */
+  font-weight: 600;          /* Tailwind font-semibold */
 }
 
 /* Item cards */
 .item-card {
-  @apply bg-white rounded-lg shadow-sm border hover:shadow-md transition-shadow duration-200;
+  background-color: #fff;    /* Tailwind bg-white */
+  border-radius: 0.5rem;     /* Tailwind rounded-lg */
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); /* Tailwind shadow-sm */
+  border: 1px solid #e5e7eb; /* Tailwind border */
+  transition: box-shadow 0.2s;
+}
+.item-card:hover {
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1); /* Tailwind hover:shadow-md */
 }
 
 /* Error states */
 .error-state {
-  @apply bg-red-50 border border-red-200 text-red-700 p-4 rounded-lg;
+  background-color: #fef2f2; /* Tailwind bg-red-50 */
+  border: 1px solid #fecaca; /* Tailwind border-red-200 */
+  color: #b91c1c;            /* Tailwind text-red-700 */
+  padding: 1rem;             /* Tailwind p-4 */
+  border-radius: 0.5rem;     /* Tailwind rounded-lg */
 }
 
 /* Success states */
 .success-state {
-  @apply bg-green-50 border border-green-200 text-green-700 p-4 rounded-lg;
+  background-color: #f0fdf4; /* Tailwind bg-green-50 */
+  border: 1px solid #bbf7d0; /* Tailwind border-green-200 */
+  color: #15803d;            /* Tailwind text-green-700 */
+  padding: 1rem;             /* Tailwind p-4 */
+  border-radius: 0.5rem;     /* Tailwind rounded-lg */
 }
 
 /* Loading states */
 .loading-skeleton {
-  @apply bg-gray-200 rounded animate-pulse;
+  background-color: #e5e7eb; /* Tailwind bg-gray-200 */
+  border-radius: 0.25rem;    /* Tailwind rounded */
+  animation: pulse 1.5s ease-in-out 0s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
 }
 
 /* Responsive table wrapper */
 .table-responsive {
-  @apply overflow-x-auto -mx-4 sm:mx-0;
+  overflow-x: auto;
+  margin-left: -1rem;  /* Tailwind -mx-4 */
+  margin-right: -1rem; /* Tailwind -mx-4 */
+}
+@media (min-width: 640px) {
+  .table-responsive {
+    margin-left: 0;   /* Tailwind sm:mx-0 */
+    margin-right: 0;  /* Tailwind sm:mx-0 */
+  }
 }
 
 /* Custom button styles */
 .btn-primary {
-  @apply bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200;
+  background-color: #2563eb; /* Tailwind bg-blue-600 */
+  color: #fff;               /* Tailwind text-white */
+  padding: 0.5rem 1rem;      /* Tailwind px-4 py-2 */
+  border-radius: 0.375rem;   /* Tailwind rounded-md */
+  transition: background-color 0.2s;
+  outline: none;
+  box-shadow: none;
+}
+.btn-primary:hover {
+  background-color: #1d4ed8; /* Tailwind hover:bg-blue-700 */
+}
+.btn-primary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px #fff; /* Tailwind focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 */
 }
 
 .btn-secondary {
-  @apply bg-gray-200 text-gray-900 px-4 py-2 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200;
+  background-color: #e5e7eb; /* Tailwind bg-gray-200 */
+  color: #111827;            /* Tailwind text-gray-900 */
+  padding: 0.5rem 1rem;      /* Tailwind px-4 py-2 */
+  border-radius: 0.375rem;   /* Tailwind rounded-md */
+  transition: background-color 0.2s;
+  outline: none;
+  box-shadow: none;
+}
+.btn-secondary:hover {
+  background-color: #d1d5db; /* Tailwind hover:bg-gray-300 */
+}
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #6b7280, 0 0 0 4px #fff; /* Tailwind focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 */
 }
 
 .btn-disabled {
-  @apply opacity-50 cursor-not-allowed;
+  opacity: 0.5;              /* Tailwind opacity-50 */
+  cursor: not-allowed;       /* Tailwind cursor-not-allowed */
 }
 
 /* Page transitions */

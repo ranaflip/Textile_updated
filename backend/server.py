@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from fastapi import FastAPI, APIRouter, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
@@ -13,19 +13,12 @@ import os
 import logging
 import asyncio
 from pathlib import Path
-from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import TimeoutException, WebDriverException
-from webdriver_manager.chrome import ChromeDriverManager
 from bs4 import BeautifulSoup
 import pandas as pd
 import requests
 import urllib.robotparser
 import re
-import time
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -145,7 +138,7 @@ class WebScraperEngine:
     def check_robots_txt(self, url: str, user_agent: str = "*") -> bool:
         """Check if scraping is allowed according to robots.txt"""
         try:
-            parsed_url = requests.utils.urlparse(url)
+            parsed_url = requests.utils.urlparse(url) # type: ignore
             robots_url = f"{parsed_url.scheme}://{parsed_url.netloc}/robots.txt"
             
             rp = urllib.robotparser.RobotFileParser()
@@ -267,7 +260,7 @@ class WebScraperEngine:
                 
                 # Extract image
                 img_elem = element.find('img')
-                image_url = img_elem.get('src') if img_elem else ''
+                image_url = img_elem.get('src') if img_elem else '' # type: ignore
                 
                 if title or description or price:  # Only add if we found some content
                     items.append({

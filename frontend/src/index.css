@@ -1,6 +1,9 @@
+/* The following lines require Tailwind CSS to be processed by PostCSS or a compatible build tool.
+   If you see "Unknown at rule @tailwind", make sure your build process includes Tailwind CSS. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+```
 
 body {
     margin: 0;
