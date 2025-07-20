@@ -3,7 +3,7 @@ services:
     name: textile-backend
     env: node
     rootDir: server
-    buildCommand: npm ci && npm run build
+    buildCommand: npm install && npm run build
     startCommand: node dist/index.js
     envVars:
       - key: NODE_ENV
@@ -18,7 +18,7 @@ services:
     name: textile-frontend
     env: static
     rootDir: frontend
-    buildCommand: npm ci && npm run build
+    buildCommand: npm install && npm run build
     staticPublishPath: out
     envVars:
       - key: NEXT_PUBLIC_API_URL
