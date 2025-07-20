@@ -1,5 +1,5 @@
 import express from 'express';
-import Scrape from '../models/Scrape';
+import Scrape from '../models/Scrape.js';
 const router = express.Router();
 
 router.get('/', async (req, res) => {
