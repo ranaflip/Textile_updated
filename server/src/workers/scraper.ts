@@ -3,7 +3,7 @@ import { Worker, Queue } from 'bullmq';
 import puppeteer from 'puppeteer';
 import * as cheerio from 'cheerio';
 import mongoose from 'mongoose';
-import Scrape from '../models/Scrape';
+import Scrape from '../models/Scrape.js';
 
 export const scrapeQueue = new Queue('scrape', {
   connection: require('ioredis').default(require('dotenv').config().parsed?.REDIS_URL),
