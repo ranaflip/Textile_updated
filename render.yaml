@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: textile-backend
+    env: node
+    rootDir: server
+    buildCommand: npm ci
+    startCommand: node dist/index.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        sync: false
+      - key: REDIS_URL
+        sync: false
+    autoDeploy: true
+
+  - type: web
+    name: textile-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: out
+    envVars:
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: textile-backend
