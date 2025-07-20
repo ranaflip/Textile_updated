@@ -16,7 +16,7 @@ export const scrapeWorker = new Worker(
     const link = await mongoose.model('Link').findById(linkId);
     if (!link) return;
 
-    const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
+    const browser = await puppeteer.launch({ headless: 'true', args: ['--no-sandbox'] });
     const page = await browser.newPage();
     await page.goto(link.url, { waitUntil: 'domcontentloaded' });
     const html = await page.content();
