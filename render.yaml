@@ -3,7 +3,7 @@ services:
     name: textile-backend
     env: node
     rootDir: server
-    buildCommand: npm ci
+    buildCommand: npm ci && npm run build   # ← add "npm run build"
     startCommand: node dist/index.js
     envVars:
       - key: NODE_ENV
