@@ -1,5 +1,5 @@
 import express from 'express';
-import Link from '../models/Link';
+import Link from '../models/Link.js';
 import { scrapeQueue } from '../workers/scraper';
 const router = express.Router();
 
